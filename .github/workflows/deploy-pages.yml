@@ -40,3 +40,18 @@ jobs:
       - name: Deploy website
         id: deployment
         uses: actions/deploy-pages@v4
+      - name: Verify published GrowthKavach homepage
+        env:
+          SITE_URL: ${{ steps.deployment.outputs.page_url }}
+        run: |
+          set -eu
+          test -n "$SITE_URL"
+          for attempt in $(seq 1 12); do
+            if curl --fail --location --silent --show-error --max-time 15 "${SITE_URL%/}/" -o /tmp/growthkavach-live.html && grep -Fq 'GrowthKavach' /tmp/growthkavach-live.html && grep -Fq 'Digital marketing toolkit' /tmp/growthkavach-live.html; then
+              echo "Verified public homepage: $SITE_URL"
+              exit 0
+            fi
+            if [ "$attempt" -lt 12 ]; then sleep 10; fi
+          done
+          echo 'Deployment completed but the expected homepage could not be verified.' >&2
+          exit 1
