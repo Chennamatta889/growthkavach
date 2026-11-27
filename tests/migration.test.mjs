@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {DatabaseSync} from 'node:sqlite';
-import {allowedHosts,target,robotsAllowed,robotsPattern,QUOTA_SQL,onRequest} from '../functions/api/[[path]].js';
+import {allowedHosts,target,robotsAllowed,robotsPattern,decodeTitle,QUOTA_SQL,onRequest} from '../functions/api/[[path]].js';
 const hosts=allowedHosts({AUDIT_HOSTS:'moneykavach.in,127.0.0.1,localhost,foo.internal'});
 test('allowlist excludes local and literal addresses',()=>assert.deepEqual([...hosts],['moneykavach.in']));
 test('reject off-host, insecure, query and credential targets',()=>{for(const url of ['https://evil.example/','http://moneykavach.in/','https://moneykavach.in.evil.example/','https://moneykavach.in@evil.example/','https://user:pass@moneykavach.in/','https://moneykavach.in:444/','https://moneykavach.in/?token=x','https://127.0.0.1/','https://moneykavach.in/%2fprivate'])assert.throws(()=>target(url,hosts));assert.equal(target('https://moneykavach.in/gold/#x',hosts).href,'https://moneykavach.in/gold/')});
@@ -17,3 +17,6 @@ test('frontend syntax, unique IDs and fourteen panels',()=>{const html=readFileS
 
 test('bounded robots patterns and most specific agent',()=>{assert.equal(robotsPattern('/private/','/private/a'),true);assert.equal(robotsPattern('/file$','/file/a'),false);assert.equal(robotsPattern('/*.pdf$','/some/file.pdf'),true);assert.equal(robotsPattern('/*.pdf$','/file.pdf/a'),false);assert.equal(robotsAllowed('User-agent: Growth\nDisallow: /\nUser-agent: GrowthKavachAudit\nAllow: /','/'),true);assert.equal(robotsAllowed('User-agent: *\nDisallow: /'+'x'.repeat(513),'/'),false)});
 test('site file endpoint rejects unapproved hosts, unsupported files and missing DB',async()=>{const req=body=>new Request('https://site.example/api/site-file',{method:'POST',headers:{Origin:'https://site.example','content-type':'application/json'},body:JSON.stringify(body)});for(const [body,status] of [[{url:'https://evil.example/',kind:'robots.txt'},400],[{url:'https://moneykavach.in/',kind:'private.txt'},400],[{url:'https://moneykavach.in/',kind:'sitemap.xml'},503]]){const r=await onRequest({request:req(body),env:{}});assert.equal(r.status,status)}});
+
+test('title character references decode once',()=>{assert.equal(decodeTitle('Gold &amp; Silver'),'Gold & Silver');assert.equal(decodeTitle('Loan &#38; Tax &#x20b9;'),'Loan & Tax ₹');assert.equal(decodeTitle('A &amp;amp; B'),'A &amp; B');assert.equal(decodeTitle('  Gold\n &nbsp;   Silver '),'Gold Silver');assert.equal(decodeTitle('&#x110000;'),'\ufffd');assert.equal(decodeTitle('&unknown;'),'&unknown;')});
+test('document title selection excludes SVG chart titles and cache version is updated',()=>{const source=readFileSync('functions/api/[[path]].js','utf8');assert.ok(source.includes(".on('head > title'"));assert.ok(!source.includes(".on('title',"));assert.ok(source.includes('v3-titlefix1|'))});
