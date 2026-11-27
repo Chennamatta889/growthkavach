@@ -1,4 +1,4 @@
-# Pages runtime configuration. Public auditing stays disabled until deployed runtime and existing bindings are verified.
+# Pages runtime configuration. Production-only public auditing is deployed together with the public-only fetch flag.
 # No credentials, salts or API tokens belong in this file.
 name = "growthkavach"
 pages_build_output_dir = "./dist"
@@ -9,13 +9,16 @@ compatibility_flags = ["global_fetch_strictly_public"]
 AI_ENABLED = "false"
 PUBLIC_AUDIT_ENABLED = "false"
 
+[env.production]
+compatibility_flags = ["global_fetch_strictly_public"]
+
 [env.production.vars]
 AUDIT_HOSTS = "moneykavach.in"
 AI_ENABLED = "true"
 AI_DAILY_CAP = "20"
 # Confirmed production Gemini model.
 GEMINI_MODEL = "gemini-3.1-flash-lite"
-PUBLIC_AUDIT_ENABLED = "false"
+PUBLIC_AUDIT_ENABLED = "true"
 
 [[env.production.d1_databases]]
 binding = "DB"
