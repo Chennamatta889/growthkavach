@@ -34,3 +34,7 @@ When the preview works, merge the validated branch into main after reviewing any
 References: https://developers.cloudflare.com/pages/functions/get-started/ ; https://developers.cloudflare.com/pages/functions/bindings/ ; https://developers.cloudflare.com/pages/functions/pricing/ ; https://developers.cloudflare.com/d1/platform/limits/ ; https://ai.google.dev/gemini-api/docs/get-started
 
 Server file smoke test: use the sitemap and robots panel's Fetch via backend button; verify correct XML and text, explicit HTTP errors, disallowed paths, and quota sharing. Robots pattern matching is bounded and conservatively rejects unsupported patterns. A public-site allowlist is not a substitute for an SSRF security review before arbitrary-domain access.
+
+## Visual dashboard and audit-based AI
+
+The dashboard counts analyzed pages, no-findings pages, pages needing review, and unverified pages separately. The priority list is a deterministic heuristic, not a ranking score. The AI button sends the report identity to the server; the server retrieves the matching unexpired D1 cached audit before sending bounded metadata and findings to Gemini. AI remains disabled until explicitly configured. Test the dashboard with mixed results; then, after AI setup, verify the audit explanation matches the displayed report and the general AI assistant still works. AI requests share the existing daily and per-minute limits. A missing or changed cached report is rejected rather than silently substituted.
