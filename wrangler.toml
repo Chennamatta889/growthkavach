@@ -1,0 +1,29 @@
+# Pages runtime configuration. Public auditing stays disabled until deployed runtime and existing bindings are verified.
+# No credentials, salts or API tokens belong in this file.
+name = "growthkavach"
+pages_build_output_dir = "./dist"
+compatibility_date = "2026-11-27"
+compatibility_flags = ["global_fetch_strictly_public"]
+
+[vars]
+AI_ENABLED = "false"
+PUBLIC_AUDIT_ENABLED = "false"
+
+[env.production.vars]
+AUDIT_HOSTS = "moneykavach.in"
+AI_ENABLED = "true"
+AI_DAILY_CAP = "20"
+# Confirmed production Gemini model.
+GEMINI_MODEL = "gemini-3.1-flash-lite"
+PUBLIC_AUDIT_ENABLED = "false"
+
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "growthkavach-db"
+database_id = "11325a57-3569-4e0e-9d19-5c5c23462eaa"
+
+# GEMINI_API_KEY and QUOTA_SALT must remain encrypted production secrets in Cloudflare.
+# Do not put production D1 bindings or enable public auditing in preview.
+[env.preview.vars]
+AI_ENABLED = "false"
+PUBLIC_AUDIT_ENABLED = "false"
