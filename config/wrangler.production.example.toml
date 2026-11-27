@@ -13,8 +13,8 @@ PUBLIC_AUDIT_ENABLED = "false"
 AUDIT_HOSTS = "moneykavach.in"
 AI_ENABLED = "true"
 AI_DAILY_CAP = "20"
-# Replace with the exact currently working production model before activation.
-GEMINI_MODEL = "VERIFY_CURRENT_PRODUCTION_MODEL"
+# Confirmed production Gemini model.
+GEMINI_MODEL = "gemini-3.1-flash-lite"
 PUBLIC_AUDIT_ENABLED = "false"
 
 [[env.production.d1_databases]]
